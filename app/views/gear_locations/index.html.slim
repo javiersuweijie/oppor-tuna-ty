@@ -1,0 +1,221 @@
+.content
+  #map
+
+  #heatmapToggleWrapper
+    p Heatmaps
+    span.toggle#heatmapToggle
+      .toggle-handle
+
+  #addGearLocation
+    .btn
+      span.icon.icon-plus
+      Add New Location
+
+css:
+  html, body { height: 100%; margin: 0; padding: 0; }
+  #map { height: 80%; }
+  .gmnoprint a, .gmnoprint span {
+    display:none;
+  }
+  .gmnoprint div {
+      background:none !important;
+  }
+  #GMapsID div div a div img{
+      display:none;
+  }
+
+  .icon-margin-right {
+    margin-right: 5px;
+  }
+
+javascript:
+  var TILE_SIZE = 256;
+  function bound(value, opt_min, opt_max) {
+      if (opt_min !== null) value = Math.max(value, opt_min);
+      if (opt_max !== null) value = Math.min(value, opt_max);
+      return value;
+  }
+
+  function degreesToRadians(deg) {
+      return deg * (Math.PI / 180);
+  }
+
+  function radiansToDegrees(rad) {
+      return rad / (Math.PI / 180);
+  }
+
+  function MercatorProjection() {
+      this.pixelOrigin_ = new google.maps.Point(TILE_SIZE / 2,
+      TILE_SIZE / 2);
+      this.pixelsPerLonDegree_ = TILE_SIZE / 360;
+      this.pixelsPerLonRadian_ = TILE_SIZE / (2 * Math.PI);
+  }
+
+  MercatorProjection.prototype.fromLatLngToPoint = function (latLng,
+  opt_point) {
+      var me = this;
+      var point = opt_point || new google.maps.Point(0, 0);
+      var origin = me.pixelOrigin_;
+
+      point.x = origin.x + latLng.lng() * me.pixelsPerLonDegree_;
+
+      // NOTE(appleton): Truncating to 0.9999 effectively limits latitude to
+      // 89.189.  This is about a third of a tile past the edge of the world
+      // tile.
+      var siny = bound(Math.sin(degreesToRadians(latLng.lat())), - 0.9999,
+      0.9999);
+      point.y = origin.y + 0.5 * Math.log((1 + siny) / (1 - siny)) * -me.pixelsPerLonRadian_;
+      return point;
+  };
+
+  MercatorProjection.prototype.fromPointToLatLng = function (point) {
+      var me = this;
+      var origin = me.pixelOrigin_;
+      var lng = (point.x - origin.x) / me.pixelsPerLonDegree_;
+      var latRadians = (point.y - origin.y) / -me.pixelsPerLonRadian_;
+      var lat = radiansToDegrees(2 * Math.atan(Math.exp(latRadians)) - Math.PI / 2);
+      return new google.maps.LatLng(lat, lng);
+  };
+
+  //Mercator --END--
+
+
+javascript:
+  var iconBase = '/assets/';
+  var icons = {
+    boat: {
+      icon: iconBase + 'boat.png'
+    },
+    gear: {
+      icon: iconBase + 'gear.png'
+    }
+  };
+
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 45.124522, lng: -65.918086},
+    zoom: 12,
+    zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_TOP
+    },
+    streetViewControl: false
+  });
+
+  infoWindow = new google.maps.InfoWindow({});
+
+  var heatmapData = [];
+
+  var desiredRadiusPerPointInMeters = 10000;
+
+  function getNewRadius() {
+    var numTiles = 1 << map.getZoom();
+    var center = map.getCenter();
+    var moved = google.maps.geometry.spherical.computeOffset(center, 10000, 90); /*1000 meters to the right*/
+    var projection = new MercatorProjection();
+    var initCoord = projection.fromLatLngToPoint(center);
+    var endCoord = projection.fromLatLngToPoint(moved);
+    var initPoint = new google.maps.Point(
+      initCoord.x * numTiles,
+      initCoord.y * numTiles);
+    var endPoint = new google.maps.Point(
+      endCoord.x * numTiles,
+      endCoord.y * numTiles);
+    var pixelsPerMeter = (Math.abs(initPoint.x-endPoint.x))/10000.0;
+    var totalPixelSize = Math.floor(desiredRadiusPerPointInMeters*pixelsPerMeter);
+    //console.log(totalPixelSize);
+    return totalPixelSize;
+  }
+
+  function addMarker(feature) {
+    console.log(feature);
+    var marker = new google.maps.Marker({
+      position: feature.position,
+      icon: icons[feature.type].icon,
+      map: map
+    })
+
+    marker.addListener('click', function() {
+      toggleInfoWindow(feature, marker);
+    });
+  }
+
+  function toggleHeatmap() {
+    heatmap.setMap(heatmap.getMap() ? null : map);
+  }
+
+  function toggleInfoWindow(feature, marker) {
+    infoWindow = new google.maps.InfoWindow({
+      content:  "<div style='text-align: center;'><div><h4>"+feature.data.gear.reg_id+"</h4>"+
+                "<h5>"+feature.data.gear.gear_type+"</h5></div>"+
+                "<div style='margin:auto;text-align:center;'>"+
+                  "<button class='btn' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
+                  "<button class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
+                "</div></div>"
+    });
+    infoWindow.open(map, marker);
+    infoWindow.setPosition(feature.position)
+  }
+
+  for (i=0; i<gon.gear_locations.length; i++) {
+    temp = gon.gear_locations[i];
+    var pos = new google.maps.LatLng(temp.lat, temp.lng);
+    heatmapData.push(pos);
+    feature = {data: temp, position: pos , map: map, type: 'gear'};
+    addMarker(feature);
+  }
+
+  var heatmap = new google.maps.visualization.HeatmapLayer({
+    data: heatmapData,
+    radius: getNewRadius(),
+    dissipating: true
+  });
+
+  var myloc = new google.maps.Marker({
+    clickable: false,
+    icon: new google.maps.MarkerImage('//maps.gstatic.com/mapfiles/mobile/mobileimgs2.png',
+                                                    new google.maps.Size(22,22),
+                                                    new google.maps.Point(0,18),
+                                                    new google.maps.Point(11,11)),
+    shadow: null,
+    zIndex: 999,
+    map: map
+  });
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      addMarker({type: 'boat', position: pos, map: map})
+      myloc.setPosition(pos);
+      map.setCenter(pos);
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  };
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+                          'Error: The Geolocation service failed.' :
+                          'Error: Your browser doesn\'t support geolocation.');
+  }
+
+  google.maps.event.addListener(map, 'zoom_changed', function () {
+      heatmap.setOptions({radius:getNewRadius()});
+  });
+
+  heatmap.setMap(map);
+
+  var toggleDiv = document.getElementById('heatmapToggleWrapper');
+  map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(toggleDiv);
+  toggleDiv.addEventListener('click', function() {
+    $('#heatmapToggle').toggleClass('active');
+    toggleHeatmap();
+  });
+
+  var addButton = document.getElementById('addGearLocation');
+  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(addButton);

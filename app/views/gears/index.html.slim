@@ -1,0 +1,12 @@
+header.bar.bar-nav
+  h1.title
+    | Gears Management
+
+.content
+  ul.table-view
+    -@gears.each do |gear|
+      li.table-view-cell
+        a.navigate-right href="#{gear_path(gear.id)}" data-transition="slide-in"
+          = gear.reg_id
+          span style="color:#b8b8b8; margin-left:20px;"
+            = gear.gear_type

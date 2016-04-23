@@ -1,0 +1,31 @@
+header.bar.bar-nav
+  a.icon.icon-left-nav.pull-left href="javascript:history.back()"
+  h1.title Gear Information
+title =@gear.reg_id
+
+.content style="background-color:#e1e1e1;"
+  .content-padded
+  ul.table-view 
+    li.table-view-cell
+      b Gear Type
+      span.pull-right = @gear.gear_type
+    li.table-view-cell
+      b Registration ID
+      span.pull-right = @gear.reg_id
+    li.table-view-cell
+      b Current Location
+      span.pull-right = @gear.reg_id
+    li.table-view-cell
+      a href="#"
+        | Click to view on map
+    li.table-view-cell
+      a href="#"
+        | Click to view on map
+    li.table-view-cell
+      b Registration ID
+      span.pull-right = @gear.reg_id
+
+css:
+  .table-view-cell {
+    padding-right:11px;
+  }
