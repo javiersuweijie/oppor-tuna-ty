@@ -4,6 +4,11 @@ class GearLocationsController < ApplicationController
     # get all locations
     @gear_locations = GearLocation.where(private_sharing: true)
     gon.gear_locations = @gear_locations.as_json(:include => [:gear])
+
+    respond_to do |format|
+      format.html {}
+      format.json { render json: @gear_locations.as_json }
+    end
   end
 
   def create
