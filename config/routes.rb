@@ -3,12 +3,10 @@ Rails.application.routes.draw do
   root 'application#home'
   devise_for :members
 
-<<<<<<< HEAD
-  
-=======
   resources :vessels
   resources :gears
->>>>>>> d1748c6e527d61c9bf5f96f5f5e24bda6f5c67ed
+  resources :gear_locations
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
