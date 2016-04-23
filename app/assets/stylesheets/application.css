@@ -14,4 +14,9 @@
  *= require ratchet
  *= require styles
  *= require_self
+ *= require devise
  */
+
+.content {
+	padding-bottom: 51px;
+}
