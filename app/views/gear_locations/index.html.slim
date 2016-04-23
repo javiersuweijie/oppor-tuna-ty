@@ -1,15 +1,19 @@
 .content
   #map
 
-  #heatmapToggleWrapper
-    p Heatmaps
-    span.toggle#heatmapToggle
+  #heatmapToggleWrapper style="text-align:center;"
+    span.toggle.active#heatmapToggle
       .toggle-handle
+    p Heatmaps
+
+    span.toggle.active#labelsToggle
+      .toggle-handle
+    p Labels
 
   #addGearLocation
     .btn
       span.icon.icon-plus
-      Add New Location
+      | Deploy Gear
 
 css:
   html, body { height: 100%; margin: 0; padding: 0; }
@@ -19,6 +23,10 @@ css:
   }
   .gmnoprint div {
       background:none !important;
+  }
+
+  .gm-style-cc {
+    display: none;
   }
   #GMapsID div div a div img{
       display:none;
@@ -90,7 +98,8 @@ javascript:
       icon: iconBase + 'gear.png'
     }
   };
-
+  allMarkers = [];
+  markersOn = true;
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 45.124522, lng: -65.918086},
     zoom: 12,
@@ -126,13 +135,12 @@ javascript:
   }
 
   function addMarker(feature) {
-    console.log(feature);
     var marker = new google.maps.Marker({
       position: feature.position,
       icon: icons[feature.type].icon,
       map: map
     })
-
+    allMarkers.push(marker);
     marker.addListener('click', function() {
       toggleInfoWindow(feature, marker);
     });
@@ -140,6 +148,14 @@ javascript:
 
   function toggleHeatmap() {
     heatmap.setMap(heatmap.getMap() ? null : map);
+  }
+
+  function toggleLabels() {
+    for(i=0;i<allMarkers.length;i++) {
+      if (markersOn) allMarkers[i].setMap(null);
+      else allMarkers[i].setMap(map);
+    }
+    markersOn = !markersOn;
   }
 
   function toggleInfoWindow(feature, marker) {
@@ -212,9 +228,14 @@ javascript:
 
   var toggleDiv = document.getElementById('heatmapToggleWrapper');
   map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(toggleDiv);
-  toggleDiv.addEventListener('click', function() {
-    $('#heatmapToggle').toggleClass('active');
+  document.getElementById('heatmapToggle').addEventListener('click', function() {
+    $("#heatmapToggle").toggleClass('active');
     toggleHeatmap();
+  });
+
+  document.getElementById('labelsToggle').addEventListener('click', function() {
+    $("#labelsToggle").toggleClass('active');
+    toggleLabels();
   });
 
   var addButton = document.getElementById('addGearLocation');
