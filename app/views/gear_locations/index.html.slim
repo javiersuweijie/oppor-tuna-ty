@@ -98,6 +98,7 @@ javascript:
       icon: iconBase + 'gear.png'
     }
   };
+  movingBoat = false;
   mapMarker = null;
   allMarkers = [];
   markersOn = true;
@@ -136,6 +137,19 @@ javascript:
     return totalPixelSize;
   }
 
+  function moveBoat() {
+    setInterval(function(){
+      if (movingBoat) {
+        mapMarker.setPosition({lat: myloc.getPosition().lat() + 0.0001, lng:myloc.getPosition().lng() + 0.0001});
+        myloc.setPosition({lat: myloc.getPosition().lat() + 0.0001, lng:myloc.getPosition().lng() + 0.0001});
+      }
+    }, 100);
+  }
+
+  function toggleMovingBoat() {
+    movingBoat = !movingBoat;
+  }
+
   function addMarker(feature) {
     var marker = new google.maps.Marker({
       position: feature.position,
@@ -143,9 +157,11 @@ javascript:
       map: map
     })
     allMarkers.push(marker);
-    marker.addListener('click', function() {
-      toggleInfoWindow(feature, marker);
-    });
+    if (feature.type == "gear") {
+      marker.addListener('click', function() {
+        toggleInfoWindow(feature, marker);
+      });
+    }
     return marker;
   }
 
@@ -167,7 +183,7 @@ javascript:
                 "<h5>"+feature.data.gear.gear_type+"</h5></div>"+
                 "<div style='margin:auto;text-align:center;'>"+
                   "<a href='gears/"+feature.data.gear.id+"' class='btn' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
-                  "<a href='gear_locations/"+feature.data.id+"/collect' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
+                  "<a href='gear_locations/"+feature.data.id+"/collect' onclick='' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
                 "</div></div>"
     });
     infoWindow.open(map, marker);
@@ -213,7 +229,7 @@ javascript:
                                                     new google.maps.Point(0,18),
                                                     new google.maps.Point(11,11)),
     shadow: null,
-    zIndex: 999,
+    zIndex: 999999,
     map: map
   });
 
@@ -224,12 +240,10 @@ javascript:
         lng: position.coords.longitude
       };
       mapMarker=addMarker({type: 'boat', position: pos, map: map})
+      mapMarker.addListener('click', toggleMovingBoat);
       myloc.setPosition(pos);
       map.setCenter(pos);
-      setInterval(function(){
-        mapMarker.setPosition({lat: myloc.getPosition().lat() + 0.0001, lng:myloc.getPosition().lng() + 0.0001});
-        myloc.setPosition({lat: myloc.getPosition().lat() + 0.0001, lng:myloc.getPosition().lng() + 0.0001});
-      }, 100);
+      moveBoat();
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
     });
