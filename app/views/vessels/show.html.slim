@@ -1,10 +1,12 @@
 header.bar.bar-nav
   h1.title =@vessel.name
 
-.content
+.content.background
   =image_tag("vessel_one.jpg")
-  =link_to 'Sign out', destroy_member_session_path, method: :delete, "data-ignore"=>"push"
   ul.table-view
     -@members.each do |member|
       li.table-view-cell
       	=member.name
+    li.table-view-cell.table-view-divider
+    li.table-view-cell.center.wide-button
+      =link_to 'Sign out', destroy_member_session_path, method: :delete, "data-ignore"=>"push", class: 'wide-button', style: 'color: red;'

@@ -1,13 +1,22 @@
 nav.bar.bar-tab
-  a.tab-item href="#" 
-    span.fa.fa-cogs
-    span.tab-label Equipment
-  a.tab-item href="#" 
-    span.fa.fa-map-o
-    span.tab-label Map
-  a.tab-item href="#" 
-    span.fa.fa-ship
-    span.tab-label Ship
+  -if current_member
+    a.tab-item href="#{gears_path}" 
+      span.fa.fa-cogs
+      span.tab-label Equipment
+    a.tab-item href="#" 
+      span.fa.fa-map-o
+      span.tab-label Map
+    a.tab-item href="#{vessel_path(current_member.vessel)}" 
+      span.fa.fa-ship
+      span.tab-label Ship
+  -else
+    a.tab-item href="#{new_member_session_path}" 
+      span.fa.fa-ship
+      span.tab-label Sign In
+    a.tab-item href="#" 
+      span.fa.fa-map-o
+      span.tab-label Map
+
 
 css:
   .fa {
