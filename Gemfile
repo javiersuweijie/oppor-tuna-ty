@@ -17,6 +17,8 @@ gem "therubyracer"
 gem "font-awesome-rails"
 
 gem 'devise'
+gem 'gon'
+
 
 gem 'activeadmin', '~> 1.0.0.pre2'
 
