@@ -5,4 +5,8 @@ class ApplicationController < ActionController::Base
 
   def home
   end
+
+  def after_sign_in_path_for(resource)
+  	vessel_path(current_member.vessel.id)
+  end
 end

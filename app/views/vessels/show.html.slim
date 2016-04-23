@@ -3,6 +3,7 @@ header.bar.bar-nav
 
 .content
   =image_tag("vessel_one.jpg")
+  =link_to 'Sign out', destroy_member_session_path, method: :delete, "data-ignore"=>"push"
   ul.table-view
     -@members.each do |member|
       li.table-view-cell
