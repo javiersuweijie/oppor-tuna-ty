@@ -37,9 +37,8 @@
     <%= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
   </head>
   <body>
-  <%= render 'templates/navbar' %>
   <%= yield %>
-  <%= render 'templates/footer' %>
+  <%= render 'templates/navbar' %>
   <%= javascript_include_tag "application" %>
   </body>
 </html>
