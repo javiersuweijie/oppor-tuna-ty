@@ -36,6 +36,7 @@
     <!-- Size should be 32 x 32 pixels -->
     <%= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
   </head>
+  <%= content_for(:header) %>
   <body>
   <%= yield %>
   <%= render 'templates/navbar' %>
