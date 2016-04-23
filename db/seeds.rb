@@ -18,7 +18,7 @@ m6 = Member.create(email: "arronli@gmail.com", name: "Arron Li", password: "pass
 
 
 20.times.each do |i|
-  reg_id = "EAN" + rand(1000000,9999999).to_s
+  reg_id = "EAN" + rand(1000000..9999999).to_s
   g = Gear.create(gear_type: "Lobster Trap", reg_id: reg_id, vessel_id: v.id, missing: false)
   gl = GearLocation.create(lng:-66.501462+(rand-0.5)/3,lat:44.861117+(rand-0.5)/3, gear_id: g.id, private_sharing: false)
 end
