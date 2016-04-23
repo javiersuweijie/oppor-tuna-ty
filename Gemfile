@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
-ruby '2.1.0'
 
 gem 'rails', '4.2.5.1'
 gem 'pg', '~> 0.15'
@@ -34,4 +33,3 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 end
-
