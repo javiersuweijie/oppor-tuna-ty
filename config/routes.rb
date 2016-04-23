@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   ActiveAdmin.routes(self)
-  root 'application#home'
+  root 'gear_locations#index'
   devise_for :members
 
   resources :vessels
