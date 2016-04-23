@@ -181,8 +181,8 @@ javascript:
       content:  "<div style='text-align: center;'><div><h4>"+feature.data.gear.reg_id+"</h4>"+
                 "<h5>"+feature.data.gear.gear_type+"</h5></div>"+
                 "<div style='margin:auto;text-align:center;'>"+
-                  "<a href='gears/"+feature.data.gear.id+"' class='btn' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
-                  "<a href='gear_locations/"+feature.data.id+"/collect' onclick='' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
+                  "<a href='gears/"+feature.data.gear.id+"' class='btn' data-ignore='push' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
+                  "<a href='gear_locations/"+feature.data.id+"/collect' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
                 "</div></div>"
     });
     infoWindow.open(map, marker);
