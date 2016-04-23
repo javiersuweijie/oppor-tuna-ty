@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.1.0'
 
 gem 'rails', '4.2.5.1'
 gem 'pg', '~> 0.15'
-gem "less-rails"
+gem "sass-rails"
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.1.0'
 gem 'slim-rails'
@@ -12,8 +12,11 @@ gem 'jquery-rails'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
+gem 'ratchet-sass'
 gem "therubyracer"
 gem "font-awesome-rails"
+
+gem 'devise'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
