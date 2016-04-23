@@ -98,6 +98,7 @@ javascript:
       icon: iconBase + 'gear.png'
     }
   };
+  mapMarker = null;
   allMarkers = [];
   markersOn = true;
   map = new google.maps.Map(document.getElementById('map'), {
@@ -106,7 +107,8 @@ javascript:
     zoomControlOptions: {
         position: google.maps.ControlPosition.RIGHT_TOP
     },
-    streetViewControl: false
+    streetViewControl: false,
+    mapTypeControl: false
   });
 
   infoWindow = new google.maps.InfoWindow({});
@@ -144,6 +146,7 @@ javascript:
     marker.addListener('click', function() {
       toggleInfoWindow(feature, marker);
     });
+    return marker;
   }
 
   function toggleHeatmap() {
@@ -171,11 +174,29 @@ javascript:
     infoWindow.setPosition(feature.position)
   }
 
+  function deployGear() {
+    var pos = new google.maps.LatLng(mapMarker.getPosition().lat(), mapMarker.getPosition().lng());
+    feature = {data: {
+      gear_id:13,
+      id:15,
+      private_sharing:true,
+      gear: {
+        gear_type: "Lobster Trap",
+        id: 3,
+        reg_id: "EAN349940",
+        vessel_id: 1
+      }
+    }, position: pos , map: map, type: 'gear'};
+    addMarker(feature);
+    heatmap.getData().push(pos);
+  }
+
   for (i=0; i<gon.gear_locations.length; i++) {
     temp = gon.gear_locations[i];
     var pos = new google.maps.LatLng(temp.lat, temp.lng);
     heatmapData.push(pos);
     feature = {data: temp, position: pos , map: map, type: 'gear'};
+    console.log(feature);
     addMarker(feature);
   }
 
@@ -202,9 +223,13 @@ javascript:
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
-      addMarker({type: 'boat', position: pos, map: map})
+      mapMarker=addMarker({type: 'boat', position: pos, map: map})
       myloc.setPosition(pos);
       map.setCenter(pos);
+      setInterval(function(){
+        mapMarker.setPosition({lat: myloc.getPosition().lat() + 0.0001, lng:myloc.getPosition().lng() + 0.0001});
+        myloc.setPosition({lat: myloc.getPosition().lat() + 0.0001, lng:myloc.getPosition().lng() + 0.0001});
+      }, 100);
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
     });
@@ -227,7 +252,7 @@ javascript:
   heatmap.setMap(map);
 
   var toggleDiv = document.getElementById('heatmapToggleWrapper');
-  map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(toggleDiv);
+  map.controls[google.maps.ControlPosition.LEFT_TOP].push(toggleDiv);
   document.getElementById('heatmapToggle').addEventListener('click', function() {
     $("#heatmapToggle").toggleClass('active');
     toggleHeatmap();
@@ -238,5 +263,8 @@ javascript:
     toggleLabels();
   });
 
+  document.getElementById('addGearLocation').addEventListener('click', function() {
+    deployGear();
+  });
   var addButton = document.getElementById('addGearLocation');
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(addButton);
