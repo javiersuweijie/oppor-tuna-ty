@@ -1,31 +1,50 @@
 header.bar.bar-nav
-  a.icon.icon-left-nav.pull-left href="javascript:history.back()"
+  a.icon.icon-left-nav.pull-left href="#{gears_path}"
   h1.title Gear Information
 title =@gear.reg_id
 
-.content style="background-color:#e1e1e1;"
+.content style="background-color:#fafafa;"
   .content-padded
   ul.table-view 
-    li.table-view-cell
+    li.table-view-cell.details
       b Gear Type
       span.pull-right = @gear.gear_type
-    li.table-view-cell
+    li.table-view-cell.details
       b Registration ID
       span.pull-right = @gear.reg_id
-    li.table-view-cell
-      b Current Location
-      span.pull-right = @gear.reg_id
-    li.table-view-cell
-      a href="#"
-        | Click to view on map
-    li.table-view-cell
-      a href="#"
-        | Click to view on map
-    li.table-view-cell
-      b Registration ID
-      span.pull-right = @gear.reg_id
+    li.table-view-cell.details
+      b Vessel
+      span.pull-right = @gear.vessel.name
+    li.table-view-cell.details
+      b Missing?
+      span.pull-right = @gear.missing ? "Yes" : "No"
+    -if @gear.missing?
+      li.table-view-cell.details
+        b Missing since
+        span.pull-right = @gear.missing_timestamp
 
-css:
-  .table-view-cell {
-    padding-right:11px;
-  }
+    -if @current_gear_location.nil?
+    -else
+      li.table-view-cell.details
+        b Current Location
+        span.pull-right = @current_gear_location.coordinates
+      li.table-view-cell.details
+        b Time placed
+        span.pull-right = @current_gear_location.created_at
+      li.table-view-cell
+        b Share data?
+        .toggle
+          -if @current_gear_location.private_sharing
+            .toggle-handle.active
+          -else
+            .toggle-handle
+    li.table-view-cell.table-view-divider
+    .container style="padding: 10px 10px;"
+      =form_for @gear do |f|
+        =f.fields_for :gear_locations, @gear.gear_locations.build do |f2|
+          =f2.label :lat
+          =f2.text_field :lat
+          =f2.label :lng
+          =f2.text_field :lng
+        =f.submit "Update Location", style:"border: none; background: white; padding: 11px;"
+    li.table-view-cell.table-view-divider
