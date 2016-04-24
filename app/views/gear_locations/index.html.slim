@@ -282,7 +282,16 @@ javascript:
       map.setCenter(pos);
       moveBoat();
     }, function() {
-      handleLocationError(true, infoWindow, map.getCenter());
+      var pos = {
+        lat: "44.91074",
+        lng: "-66.484295"
+      };
+      mapMarker=addMarker({type: 'boat', position: pos, map: map})
+      mapMarker.addListener('click', toggleMovingBoat);
+      myloc.setPosition(pos);
+      map.setCenter(pos);
+      moveBoat();
+      //handleLocationError(true, infoWindow, map.getCenter());
     });
   } else {
     // Browser doesn't support Geolocation
