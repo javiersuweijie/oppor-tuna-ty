@@ -39,6 +39,7 @@ css:
 
 javascript:
   var TILE_SIZE = 256;
+  var all_markers = {};
   function bound(value, opt_min, opt_max) {
       if (opt_min !== null) value = Math.max(value, opt_min);
       if (opt_max !== null) value = Math.min(value, opt_max);
@@ -183,7 +184,7 @@ javascript:
                 "<h5>"+feature.data.gear.gear_type+"</h5></div>"+
                 "<div style='margin:auto;text-align:center;'>"+
                   "<a href='gears/"+feature.data.gear.id+"' class='btn' data-ignore='push' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
-                  "<a href='gear_locations/"+feature.data.id+"/collect' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
+                  "<a href='gear_locations/"+feature.data.id+"/collect' onclick='collectGear("+feature.id+")' data-ignore='push' data-remote='true' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
                 "</div></div>"
     });
     infoWindow.open(map, marker);
@@ -207,16 +208,36 @@ javascript:
     heatmap.getData().push(pos);
     $.post('/gear_locations', {'gear_locations': {'lat': pos.lat(),'lng':pos.lng(),'private_sharing':true}});
   }
+
+  function collectGear(feature_id) {
+    all_markers[feature_id].setMap(null)
+    window.heatmap.setMap(null);
+    var heatmapDataUpdated = [];
+    for (i=0; i<gon.gear_locations.length; i++) {
+      temp = gon.gear_locations[i];
+      var pos = new google.maps.LatLng(temp.lat, temp.lng);
+      if (feature_id != temp.id) {
+        console.log(feature_id, temp.id);
+        heatmapDataUpdated.push(pos);
+      }
+    }  
+    window.heatmap = new google.maps.visualization.HeatmapLayer({
+      data: heatmapDataUpdated,
+      radius: getNewRadius(),
+      dissipating: true
+    });
+    window.heatmap.setMap(map);
+  }
+
   for (i=0; i<gon.gear_locations.length; i++) {
     temp = gon.gear_locations[i];
     var pos = new google.maps.LatLng(temp.lat, temp.lng);
     heatmapData.push(pos);
-    feature = {data: temp, position: pos , map: map, type: 'gear'};
-    console.log(feature);
-    addMarker(feature);
+    feature = {data: temp, position: pos , map: map, type: 'gear', id:temp.id};
+    all_markers[""+temp.id] = addMarker(feature);
   }
 
-  var heatmap = new google.maps.visualization.HeatmapLayer({
+  window.heatmap = new google.maps.visualization.HeatmapLayer({
     data: heatmapData,
     radius: getNewRadius(),
     dissipating: true
