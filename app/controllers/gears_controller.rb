@@ -19,4 +19,24 @@ class GearsController < ApplicationController
   def gear_params
     params.require(:gear).permit(gear_locations_attributes: [:lat,:lng,:gear_id])
   end
+
+  def report_missing
+    @gear = Gear.find(params[:id])
+    @gear.update(missing: true, missing_timestamp: Time.now)
+
+    respond_to do |format|
+      format.html { redirect_to gear_locations_path }
+      format.json { render json: @gear.as_json }
+    end
+  end
+
+  def report_not_missing
+    @gear = Gear.find(params[:id])
+    @gear.update(missing: false)
+
+    respond_to do |format|
+      format.html { redirect_to gear_locations_path }
+      format.json { render json: @gear.as_json }
+    end
+  end
 end

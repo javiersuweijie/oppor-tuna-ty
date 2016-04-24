@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160423104427) do
+ActiveRecord::Schema.define(version: 20160424015503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,13 +31,16 @@ ActiveRecord::Schema.define(version: 20160423104427) do
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
+  create_table "default_values", force: :cascade do |t|
+  end
+
   create_table "gear_locations", force: :cascade do |t|
     t.decimal  "lng"
     t.decimal  "lat"
     t.integer  "gear_id"
-    t.boolean  "private_sharing"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.boolean  "private_sharing", default: true
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
   end
 
   add_index "gear_locations", ["gear_id"], name: "index_gear_locations_on_gear_id", using: :btree
@@ -46,10 +49,10 @@ ActiveRecord::Schema.define(version: 20160423104427) do
     t.string   "gear_type"
     t.string   "reg_id"
     t.integer  "vessel_id"
-    t.boolean  "missing"
+    t.boolean  "missing",           default: false
     t.datetime "missing_timestamp"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
   end
 
   add_index "gears", ["vessel_id"], name: "index_gears_on_vessel_id", using: :btree

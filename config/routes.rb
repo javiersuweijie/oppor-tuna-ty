@@ -4,7 +4,12 @@ Rails.application.routes.draw do
   devise_for :members
 
   resources :vessels
-  resources :gears
+  resources :gears do
+    member do
+      get 'report_missing'
+      get 'report_not_missing'
+    end
+  end
   resources :gear_locations do
     member do
       get 'collect'

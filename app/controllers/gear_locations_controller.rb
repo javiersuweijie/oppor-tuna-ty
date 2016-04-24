@@ -3,7 +3,13 @@ class GearLocationsController < ApplicationController
   def index
     # get all locations
     @gear_locations = GearLocation.where(private_sharing: true)
+
     gon.gear_locations = @gear_locations.as_json(:include => [:gear])
+    if member_signed_in?
+      gon.current_vessel_id = current_member.vessel.id
+    else
+      gon.current_vessel_id = 0
+    end
 
     respond_to do |format|
       format.html {}
@@ -12,7 +18,8 @@ class GearLocationsController < ApplicationController
   end
 
   def create
-    gl = GearLocation.create(gear_params.merge(gear_id:Gear.last.id))
+    gear = current_member.vessel.gears.order("updated_at ASC").first
+    gl = GearLocation.create(gear_params.merge(gear_id: gear.id))
 
     respond_to do |format|
       format.json { gl.to_json }

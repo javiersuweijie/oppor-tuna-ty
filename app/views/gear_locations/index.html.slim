@@ -97,8 +97,16 @@ javascript:
     },
     gear: {
       icon: "#{asset_path('gear.png')}"
+    },
+    my_gear: {
+      icon: "#{asset_path('my-gear.png')}"
+    },
+    missing_gear: {
+      icon: "#{asset_path('missing-gear.png')}"
     }
   };
+
+
   movingBoat = false;
   mapMarker = null;
   allMarkers = [];
@@ -158,7 +166,7 @@ javascript:
       map: map
     })
     allMarkers.push(marker);
-    if (feature.type == "gear") {
+    if (feature.type == "my_gear") {
       marker.addListener('click', function() {
         toggleInfoWindow(feature, marker);
       });
@@ -203,7 +211,7 @@ javascript:
         reg_id: "EAN349940",
         vessel_id: 1
       }
-    }, position: pos , map: map, type: 'gear'};
+    }, position: pos , map: map, type: 'my_gear'};
     addMarker(feature);
     heatmap.getData().push(pos);
     $.post('/gear_locations', {'gear_locations': {'lat': pos.lat(),'lng':pos.lng(),'private_sharing':true}});
@@ -220,7 +228,7 @@ javascript:
         console.log(feature_id, temp.id);
         heatmapDataUpdated.push(pos);
       }
-    }  
+    }
     window.heatmap = new google.maps.visualization.HeatmapLayer({
       data: heatmapDataUpdated,
       radius: getNewRadius(),
@@ -233,8 +241,16 @@ javascript:
     temp = gon.gear_locations[i];
     var pos = new google.maps.LatLng(temp.lat, temp.lng);
     heatmapData.push(pos);
-    feature = {data: temp, position: pos , map: map, type: 'gear', id:temp.id};
+    feature = {data: temp, position: pos , map: map, id:temp.id};
+
+
+    if (temp.gear.missing) {feature.type = 'missing_gear';}
+    else if (temp.gear.vessel_id == gon.current_vessel_id) {feature.type = 'my_gear';}
+    else {feature.type = 'gear';}
+
+    console.log(feature);
     all_markers[""+temp.id] = addMarker(feature);
+    addMarker(feature);
   }
 
   window.heatmap = new google.maps.visualization.HeatmapLayer({

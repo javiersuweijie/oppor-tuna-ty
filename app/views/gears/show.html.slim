@@ -5,7 +5,7 @@ title =@gear.reg_id
 
 .content.background
   .content-padded
-  ul.table-view 
+  ul.table-view
     li.table-view-cell.details
       b Gear Type
       span.pull-right = @gear.gear_type
@@ -18,10 +18,6 @@ title =@gear.reg_id
     li.table-view-cell.details
       b Missing?
       span.pull-right = @gear.missing ? "Yes" : "No"
-    -if @gear.missing?
-      li.table-view-cell.details
-        b Missing since
-        span.pull-right = @gear.missing_timestamp
 
     -if @current_gear_location.nil?
     -else
@@ -38,6 +34,15 @@ title =@gear.reg_id
             .toggle-handle.active
           -else
             .toggle-handle
+
+    br
+    -if !@gear.missing?
+      div style="padding: 10px;"
+        = link_to "Report Missing",report_missing_gear_path(@gear.id), class: "btn btn-block btn-negative", "data-ignore"=> "push"
+    -else
+      div style="padding: 10px;"
+        = link_to "Report Not Missing",report_not_missing_gear_path(@gear.id), class: "btn btn-block btn-positive", "data-ignore"=> "push"
+
     li.table-view-cell.table-view-divider
     .container style="padding: 10px 10px;"
       =form_for @gear do |f|
@@ -46,5 +51,5 @@ title =@gear.reg_id
           =f2.text_field :lat
           =f2.label :lng
           =f2.text_field :lng
-        =f.submit "Update Location", style:"border: none; background: white; padding: 11px;"
+        =f.submit "Update Location", class:"btn btn-block btn-positive"
     li.table-view-cell.table-view-divider
