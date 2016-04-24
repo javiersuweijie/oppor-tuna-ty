@@ -10,10 +10,11 @@
       .toggle-handle
     p Labels
 
-  #addGearLocation
-    .btn
-      span.icon.icon-plus
-      | Deploy Gear
+  - if current_member.present?
+    #addGearLocation
+      .btn
+        span.icon.icon-plus
+        | Deploy Gear
 
 css:
   html, body { height: 100%; margin: 0; padding: 0; }
@@ -205,6 +206,7 @@ javascript:
     }, position: pos , map: map, type: 'gear'};
     addMarker(feature);
     heatmap.getData().push(pos);
+    $.post('/gear_locations', {'gear_locations': {'lat': pos.lat(),'lng':pos.lng(),'private_sharing':true}});
   }
 
   for (i=0; i<gon.gear_locations.length; i++) {
