@@ -90,13 +90,12 @@ javascript:
 
 
 javascript:
-  var iconBase = '/assets/';
   var icons = {
     boat: {
-      icon: iconBase + 'boat.png'
+      icon: "#{asset_path('boat.png')}"
     },
     gear: {
-      icon: iconBase + 'gear.png'
+      icon: "#{asset_path('gear.png')}"
     }
   };
   movingBoat = false;
@@ -183,8 +182,8 @@ javascript:
       content:  "<div style='text-align: center;'><div><h4>"+feature.data.gear.reg_id+"</h4>"+
                 "<h5>"+feature.data.gear.gear_type+"</h5></div>"+
                 "<div style='margin:auto;text-align:center;'>"+
-                  "<a href='gears/"+feature.data.gear.id+"' class='btn' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
-                  "<a href='gear_locations/"+feature.data.id+"/collect' onclick='' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
+                  "<a href='gears/"+feature.data.gear.id+"' class='btn' data-ignore='push' style='margin-right: 5px;'><span class='icon icon-more icon-margin-right'></span>More</button>"+
+                  "<a href='gear_locations/"+feature.data.id+"/collect' data-ignore='push' class='btn'><span class='icon icon-check icon-margin-right'></span>Collect</button>"+
                 "</div></div>"
     });
     infoWindow.open(map, marker);
@@ -208,7 +207,6 @@ javascript:
     heatmap.getData().push(pos);
     $.post('/gear_locations', {'gear_locations': {'lat': pos.lat(),'lng':pos.lng(),'private_sharing':true}});
   }
-
   for (i=0; i<gon.gear_locations.length; i++) {
     temp = gon.gear_locations[i];
     var pos = new google.maps.LatLng(temp.lat, temp.lng);

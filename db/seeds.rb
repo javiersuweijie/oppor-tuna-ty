@@ -16,7 +16,9 @@ m4 = Member.create(email: "javiersu@gmail.com", name: "Javier Su", password: "pa
 m5 = Member.create(email: "wongshunhim@gmail.com", name: "Wong Shun Him", password: "password", password_confirmation: "password", vessel_id: v.id)
 m6 = Member.create(email: "arronli@gmail.com", name: "Arron Li", password: "password", password_confirmation: "password", vessel_id: v.id)
 
-g = Gear.create(gear_type: "Lobster Trap", reg_id: "EAN2201032", vessel_id: v.id, missing: false)
 
-gl = GearLocation.create(lat: 44.861117, lng: -66.501462, gear_id: g.id, )
-
+20.times.each do |i|
+  reg_id = "EAN" + rand(1000000..9999999).to_s
+  g = Gear.create(gear_type: "Lobster Trap", reg_id: reg_id, vessel_id: v.id, missing: false)
+  gl = GearLocation.create(lng:-66.501462+(rand-0.5)/3,lat:44.861117+(rand-0.5)/3, gear_id: g.id, private_sharing: true)
+end
